@@ -75,9 +75,8 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
             onDessertClicked()
         }
 
-        // TODO (04) Pass in 'this' MainActivity's lifecycle so that it is observed
-        // Setup dessertTimer
-        dessertTimer = DessertTimer()
+        // Setup dessertTimer, passing in the lifecycle
+        dessertTimer = DessertTimer(this.lifecycle)
 
         // Set the TextViews to the right values
         binding.revenue = revenue
@@ -155,11 +154,9 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
     }
 
     /** Lifecycle Methods **/
-    // TODO (05) Remove the calls to startTimer and stopTimer here; you shouldn't need them anymore!
     override fun onStart() {
         super.onStart()
         Timber.i("onStart Called")
-        dessertTimer.startTimer()
     }
 
     override fun onResume() {
@@ -175,7 +172,6 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
     override fun onStop() {
         super.onStop()
         Timber.i("onStop Called")
-        dessertTimer.stopTimer()
     }
 
     override fun onDestroy() {
