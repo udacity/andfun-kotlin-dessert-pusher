@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // TODO (01) Add an info level log statement here
 
         // Use Data Binding to get reference to the views
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -146,4 +147,6 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    // TODO (02) Override the onStart lifecycle method and add an info level log statement
 }
