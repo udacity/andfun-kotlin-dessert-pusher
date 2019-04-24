@@ -155,4 +155,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
         super.onStart()
         Log.i("MainActivity", "onStart Called")
     }
+
+    // TODO (05) Here, override the rest of the lifecycle methods and use Timber to print
+    // log statements. Don't forget to update the log statement in onCreate!
 }
