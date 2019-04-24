@@ -44,5 +44,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha4'
-    // TODO (01) Add Timber gradle dependency from https://github.com/JakeWharton/timber#download
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }
