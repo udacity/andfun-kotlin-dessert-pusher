@@ -18,6 +18,8 @@ package com.example.android.dessertpusher
 
 import android.content.ActivityNotFoundException
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -25,30 +27,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.example.android.dessertpusher.database.DataBase
 import com.example.android.dessertpusher.databinding.ActivityMainBinding
 import timber.log.Timber
 
-/** onSaveInstanceState Bundle Keys **/
-const val KEY_REVENUE = "revenue_key"
-const val KEY_DESSERT_SOLD = "dessert_sold_key"
-const val KEY_TIMER_SECONDS = "timer_seconds_key"
-
 class MainActivity : AppCompatActivity(), LifecycleObserver {
 
-    private var revenue = 0
-    private var dessertsSold = 0
     private lateinit var dessertTimer: DessertTimer
 
     // Contains all the views
     private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel: MainViewModel
 
-    /** Dessert Data **/
-
-    /**
-     * Simple data class that represents a dessert. Includes the resource id integer associated with
-     * the image, the price it's sold for, and the startProductionAmount, which determines when
-     * the dessert starts to be produced.
-     */
     data class Dessert(val imageId: Int, val price: Int, val startProductionAmount: Int)
 
     // Create a list of all desserts, in order of when they start being produced
@@ -76,27 +68,51 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
         // Use Data Binding to get reference to the views
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
+        val thisApplication = requireNotNull(this).application
+        val dataSource = DataBase.getInstance(thisApplication)!!.databaseDao
+        val mainViewModelFactory = MainViewModelFactory(dataSource)
+
+        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
+
+        viewModel.getData()
+        binding.revenue = viewModel.revenue
+        binding.amountSold = viewModel.dessertsSold
+
+        val setTimer = object: CountDownTimer(1500, 100){
+            override fun onFinish() {
+                viewModel.getData()
+                binding.revenue = viewModel.revenue
+                binding.amountSold = viewModel.dessertsSold
+                showCurrentDessert()
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                viewModel.getData()
+                binding.revenue = viewModel.revenue
+                binding.amountSold = viewModel.dessertsSold
+                showCurrentDessert()
+            }
+        }
+
+        setTimer.start()
+
+        Timber.i("Binding.revenue = ${binding.revenue} and ViewModel.revenue = ${viewModel.revenue}")
+        Timber.i("Binding.amountSold = ${binding.amountSold} and ViewModel.revenue = ${viewModel.dessertsSold}")
+
         binding.dessertButton.setOnClickListener {
+            setTimer.cancel()
+            viewModel.clearData()
+            viewModel.insertData()
             onDessertClicked()
         }
 
         // Setup dessertTimer, passing in the lifecycle
         dessertTimer = DessertTimer(this.lifecycle)
 
-        // If there is a savedInstanceState bundle, then you're "restarting" the activity
-        // If there isn't a bundle, then it's a "fresh" start
-        if (savedInstanceState != null) {
-            // Get all the game state information from the bundle, set it
-            revenue = savedInstanceState.getInt(KEY_REVENUE, 0)
-            dessertsSold = savedInstanceState.getInt(KEY_DESSERT_SOLD, 0)
-            dessertTimer.secondsCount = savedInstanceState.getInt(KEY_TIMER_SECONDS, 0)
-            showCurrentDessert()
-
-        }
 
         // Set the TextViews to the right values
-        binding.revenue = revenue
-        binding.amountSold = dessertsSold
+        binding.revenue = viewModel.revenue
+        binding.amountSold = viewModel.dessertsSold
 
         // Make sure the correct dessert is showing
         binding.dessertButton.setImageResource(currentDessert.imageId)
@@ -108,11 +124,11 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
     private fun onDessertClicked() {
 
         // Update the score
-        revenue += currentDessert.price
-        dessertsSold++
+        viewModel.revenue += currentDessert.price
+        viewModel.dessertsSold++
 
-        binding.revenue = revenue
-        binding.amountSold = dessertsSold
+        binding.revenue = viewModel.revenue
+        binding.amountSold = viewModel.dessertsSold
 
         // Show the next dessert
         showCurrentDessert()
@@ -124,7 +140,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
     private fun showCurrentDessert() {
         var newDessert = allDesserts[0]
         for (dessert in allDesserts) {
-            if (dessertsSold >= dessert.startProductionAmount) {
+            if (viewModel.dessertsSold >= dessert.startProductionAmount) {
                 newDessert = dessert
             }
             // The list of desserts is sorted by startProductionAmount. As you sell more desserts,
@@ -146,7 +162,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
      */
     private fun onShare() {
         val shareIntent = ShareCompat.IntentBuilder.from(this)
-                .setText(getString(R.string.share_text, dessertsSold, revenue))
+                .setText(getString(R.string.share_text, viewModel.dessertsSold, viewModel.revenue))
                 .setType("text/plain")
                 .intent
         try {
@@ -169,50 +185,9 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
         return super.onOptionsItemSelected(item)
     }
 
-    /**
-     * Called when the user navigates away from the app but might come back
-     */
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(KEY_REVENUE, revenue)
-        outState.putInt(KEY_DESSERT_SOLD, dessertsSold)
-        outState.putInt(KEY_TIMER_SECONDS, dessertTimer.secondsCount)
-        Timber.i("onSaveInstanceState Called")
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        Timber.i("onRestoreInstanceState Called")
-    }
-
-    /** Lifecycle Methods **/
-    override fun onStart() {
-        super.onStart()
-        Timber.i("onStart Called")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Timber.i("onResume Called")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Timber.i("onPause Called")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Timber.i("onStop Called")
-    }
-
     override fun onDestroy() {
         super.onDestroy()
+        viewModel.getData()
         Timber.i("onDestroy Called")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        Timber.i("onRestart Called")
     }
 }
