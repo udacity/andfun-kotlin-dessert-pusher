@@ -87,9 +87,9 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
         // If there isn't a bundle, then it's a "fresh" start
         if (savedInstanceState != null) {
             // Get all the game state information from the bundle, set it
-            revenue = savedInstanceState.getInt(KEY_REVENUE, 0)
-            dessertsSold = savedInstanceState.getInt(KEY_DESSERT_SOLD, 0)
-            dessertTimer.secondsCount = savedInstanceState.getInt(KEY_TIMER_SECONDS, 0)
+            revenue = savedInstanceState.getInt(KEY_REVENUE)
+            dessertsSold = savedInstanceState.getInt(KEY_DESSERT_SOLD)
+            dessertTimer.secondsCount = savedInstanceState.getInt(KEY_TIMER_SECONDS)
             showCurrentDessert()
 
         }
