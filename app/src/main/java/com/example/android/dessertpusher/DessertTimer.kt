@@ -17,6 +17,9 @@
 package com.example.android.dessertpusher
 
 import android.os.Handler
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import timber.log.Timber
 
 /**
@@ -35,10 +38,8 @@ import timber.log.Timber
  *
  */
 
-// TODO (01) Make DessertTimer a LifecycleObserver by implementing LifecycleObserver
-// TODO (02) Have DessertTimer take in a Lifecycle as a parameter and set up the
 // observer relationship in an init block
-class DessertTimer {
+class DessertTimer(lifecycle: Lifecycle) :LifecycleObserver {
 
     // The number of seconds counted since the timer started
     var secondsCount = 0
@@ -50,8 +51,13 @@ class DessertTimer {
     private var handler = Handler()
     private lateinit var runnable: Runnable
 
+    init {
+        lifecycle.addObserver(this)
+    }
 
-    // TODO (03) Annotate startTimer and stopTimer with @OnLifecycleEvent and the correct event
+
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun startTimer() {
         // Create the runnable action, which prints out a log and increments the seconds counter
         runnable = Runnable {
