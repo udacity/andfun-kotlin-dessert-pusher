@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+
+
+
 
 android {
     compileSdkVersion 30
@@ -37,13 +38,22 @@ android {
     }
     buildFeatures {
         dataBinding true
+
+        // for view binding:
+        // viewBinding true
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-rc1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0-alpha2'
     implementation 'com.jakewharton.timber:timber:4.7.1'
 }
