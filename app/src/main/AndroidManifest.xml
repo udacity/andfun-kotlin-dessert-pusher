@@ -18,6 +18,7 @@
     package="com.example.android.dessertpusher">
 
     <application
+        android:name=".PusherApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_dessert_pusher"
         android:label="@string/app_name"
