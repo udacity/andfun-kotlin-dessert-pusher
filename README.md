@@ -13,7 +13,17 @@ This app is for exploring the [Activity Lifecycle callback methods](https://deve
 
 ![Screenshot1](screenshots/screen0.png) ![Screenshot1](screenshots/screen1.png) ![Screenshot1](screenshots/screen2.png)
 
-## How to use this repo while taking the course
+## How to use this repository
+
+- Fork this repository to your Github account.
+- Open Android Studio 3.2.x+ in your local machine.
+- We recommend you to use the [Version Control System](https://developer.android.com/studio/intro#version_control_basics)(VCS) in your Android Studio 3.2.x+ IDE to clone the repository directly in your IDE.
+- You may have to use the File > Settings > Version Control (VCS) menu option to set up Git settings.
+- Refer to this [IntelliJ document](https://www.jetbrains.com/help/idea/version-control-integration.html) for details.
+- Working with VCS will make it easy for you to push your updates or switch between branches to your remote repository in Github.
+
+
+## Repo Details
 
 
 Each code repository in this class has a chain of commits that looks like this:

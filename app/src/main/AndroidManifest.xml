@@ -25,6 +25,7 @@
         android:roundIcon="@mipmap/ic_dessert_pusher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        
         <activity android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

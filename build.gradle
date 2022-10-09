@@ -20,6 +20,7 @@
 buildscript {
     ext.kotlin_version = '1.7.10'
     repositories {
+        mavenCentral()
         google()
         mavenCentral()
     }
@@ -34,6 +35,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
         mavenCentral()
     }
