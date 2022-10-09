@@ -17,9 +17,8 @@
 package com.example.android.dessertpusher
 
 import android.os.Handler
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import android.os.Looper
+import androidx.lifecycle.*
 import timber.log.Timber
 
 /**
@@ -37,7 +36,7 @@ import timber.log.Timber
  * https://developer.android.com/guide/components/processes-and-threads
  *
  */
-class DessertTimer(lifecycle: Lifecycle) : LifecycleObserver {
+class DessertTimer(lifecycle: Lifecycle) : DefaultLifecycleObserver {
 
     // The number of seconds counted since the timer started
     var secondsCount = 0
@@ -46,7 +45,7 @@ class DessertTimer(lifecycle: Lifecycle) : LifecycleObserver {
      * [Handler] is a class meant to process a queue of messages (known as [android.os.Message]s)
      * or actions (known as [Runnable]s)
      */
-    private var handler = Handler()
+    private var handler = Handler(Looper.getMainLooper())
     private lateinit var runnable: Runnable
 
 
@@ -56,8 +55,17 @@ class DessertTimer(lifecycle: Lifecycle) : LifecycleObserver {
         lifecycle.addObserver(this)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun startTimer() {
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
+        startTimer()
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        super.onStop(owner)
+        stopTimer()
+    }
+
+    private fun startTimer() {
         // Create the runnable action, which prints out a log and increments the seconds counter
         runnable = Runnable {
             secondsCount++
@@ -75,8 +83,7 @@ class DessertTimer(lifecycle: Lifecycle) : LifecycleObserver {
         // In this case, no looper is defined, and it defaults to the main or UI thread.
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun stopTimer() {
+    private fun stopTimer() {
         // Removes all pending posts of runnable from the handler's queue, effectively stopping the
         // timer
         handler.removeCallbacks(runnable)
