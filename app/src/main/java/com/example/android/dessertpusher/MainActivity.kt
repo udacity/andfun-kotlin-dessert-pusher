@@ -67,6 +67,11 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (savedInstanceState !== null){
+            revenue = savedInstanceState.getInt("key_revenue");
+            dessertsSold = savedInstanceState.getInt("key_dessertsSold")
+        }
+
         Timber.d("onCreate");
         timer = DessertTimer(lifecycle);
         // Use Data Binding to get reference to the views
@@ -98,6 +103,13 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
 
         // Show the next dessert
         showCurrentDessert()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Timber.i("onSaveInstanceState");
+        outState.putInt("key_revenue", revenue)
+        outState.putInt("key_dessertsSold", dessertsSold )
     }
 
     /**

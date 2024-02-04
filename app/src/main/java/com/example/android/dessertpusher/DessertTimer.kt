@@ -84,6 +84,8 @@ class DessertTimer(lifecycle: Lifecycle) : DefaultLifecycleObserver {
         startTimer();
     }
 
+
+
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
         stopTimer();
